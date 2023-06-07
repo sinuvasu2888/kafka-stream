@@ -1,0 +1,57 @@
+spring.application.name: ING-processor1
+server.port: 8080
+#kafka stream
+spring.cloud.stream.kafka.streams.binder:
+  configuration:
+    commit.interval.ms: 1000
+    default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+    default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+    application.id: ING-processor
+spring.cloud.stream.bindings.input:
+  consumer:
+    concurrency: 3
+    maxAttempts: 3
+  group: ingconsumer
+  destination: message-in-1
+spring.cloud.stream.bindings.output:
+  destination: message-out-1-in-2
+spring.cloud.stream.bindings.input2:
+  consumer:
+    concurrency: 3
+    maxAttempts: 3
+  group: ingconsumer
+  destination: message-out-1-in-2
+spring.cloud.stream.bindings.output2:
+  destination: message-out-2-in-3
+spring.cloud.stream.bindings.input3:
+  consumer:
+    concurrency: 3
+    maxAttempts: 3
+  group: ingconsumer
+  destination: message-out-2-in-3
+spring.cloud.stream.bindings.output3:
+  destination: message-out-3
+spring.cloud.stream.kafka.bindings:
+  input.consumer:
+    enableDlq: true
+    dlqName: ing-dlq
+  input2.consumer:
+    enableDlq: true
+    dlqName: ing-dlq
+  input3.consumer:
+    enableDlq: true
+    dlqName: ing-dlq
+#Distributed tracing
+#spring.zipkin.base-url: http://localhost:9411/
+spring.zipkin.sender.type: kafka
+spring.kafka.bootstrap-servers: 127.0.0.1:9092
+spring.sleuth.sampler.probability: 1
+#Enable metrics
+management:
+  endpoint:
+    prometheus.cache.time-to-live: 10s
+    health.show-details: ALWAYS
+  endpoints.web.exposure.include: metrics,health,prometheus
+#Enable logging to debug for spring kafka config
+logging.level:
+    org.springframework.kafka.config: debug
